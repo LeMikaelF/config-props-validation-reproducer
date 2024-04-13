@@ -42,6 +42,13 @@ class ValidationReproducerTest implements WithAssertions {
                         .hasMessageContaining("Field error in object 'props.nested-set[0]' on field 'prop2': rejected value [null]"));
     }
 
+    @Test
+    void topLevel() {
+        runner.withPropertyValues("props.top-level.prop1=myvalue")
+                .run(context -> assertThat(context).getFailure().rootCause()
+                        .hasMessageContaining("Field error in object 'props.top-level' on field 'prop2': rejected value [null]"));
+    }
+
     @Data
     @Validated
     @ConfigurationProperties(prefix = "props")
@@ -49,6 +56,7 @@ class ValidationReproducerTest implements WithAssertions {
 
         private Map<String, MyClass> nestedMap = new HashMap<>();
         private Set<MyClass> nestedSet = new HashSet<>();
+        private MyClass topLevel = new MyClass();
 
         @Data
         static class MyClass {
