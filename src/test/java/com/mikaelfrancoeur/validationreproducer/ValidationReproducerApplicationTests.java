@@ -34,7 +34,8 @@ class ValidationReproducerTest implements WithAssertions {
                 .run(context -> {
                     assertThat(context)
                             .getFailure()
-                            .hasMessage("");
+                            .rootCause()
+                            .hasMessageContaining("Field error in object 'props.nesteds.something' on field 'prop2': rejected value [null]");
                 });
     }
 
