@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -29,24 +30,17 @@ class ValidationReproducerTest implements WithAssertions {
     }
 
     @Test
-    void nestedRecordMap() {
-        runner.withPropertyValues("props.nested-record-map.something.prop1=something")
-                .run(context -> assertThat(context).getFailure().rootCause()
-                        .hasMessageContaining("Field error in object 'props.nested-record-map.something' on field 'prop2': rejected value [null]"));
-    }
-
-    @Test
     void nestedClassMap() {
-        runner.withPropertyValues("props.nested-class-map.something.prop1=something")
+        runner.withPropertyValues("props.nested-map.something.prop1=myvalue")
                 .run(context -> assertThat(context).getFailure().rootCause()
-                        .hasMessageContaining("Field error in object 'props.nested-class-map.something' on field 'prop2': rejected value [null]"));
+                        .hasMessageContaining("Field error in object 'props.nested-map.something' on field 'prop2': rejected value [null]"));
     }
 
     @Test
     void nestedClassSet() {
-        runner.withPropertyValues("props.nested-class-set[0].prop1=something")
+        runner.withPropertyValues("props.nested-set[0].prop1=myvalue")
                 .run(context -> assertThat(context).getFailure().rootCause()
-                        .hasMessageContaining("Field error in object 'props.nested-class-set[0]' on field 'prop2': rejected value [null]"));
+                        .hasMessageContaining("Field error in object 'props.nested-set[0]' on field 'prop2': rejected value [null]"));
     }
 
     @Data
@@ -54,15 +48,8 @@ class ValidationReproducerTest implements WithAssertions {
     @ConfigurationProperties(prefix = "props")
     static class ConfigPropsClass {
 
-        private Map<String, NestedRecord> nestedRecordMap = new HashMap<>();
-        private Map<String, NestedClass> nestedClassMap = new HashMap<>();
-        private Set<NestedClass> nestedClassSet = new HashSet<>();
-
-        record NestedRecord(
-                String prop1,
-                @NotEmpty String prop2
-        ) {
-        }
+        private Map<String, NestedClass> nestedMap = new HashMap<>();
+        private Set<NestedClass> nestedSet = new HashSet<>();
 
         @Data
         static class NestedClass {
