@@ -25,17 +25,15 @@ class ValidationReproducerTest implements WithAssertions {
 
     @Test
     void topLevel() {
-        runner.withPropertyValues("props.prop1=myvalue")
-                .run(context -> assertThat(context).getFailure().rootCause()
-                        .hasMessageContaining("Field error in object 'props' on field 'prop2': rejected value [null]"));
+        runner.run(context -> assertThat(context).getFailure().rootCause()
+                .hasMessageContaining("Field error in object 'props' on field 'myprop': rejected value [null]"));
     }
 
     @Data
     @Validated
     @ConfigurationProperties(prefix = "props")
     static class ConfigPropsClass {
-        private String prop1;
-        @NotEmpty private String prop2;
+        @NotEmpty private String myprop;
     }
 
     @EnableConfigurationProperties(ConfigPropsClass.class)
