@@ -14,6 +14,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 class ValidationReproducerTest implements WithAssertions {
 
@@ -27,15 +28,17 @@ class ValidationReproducerTest implements WithAssertions {
     }
 
     @Test
-    void topLevelString() {
-        runner
-                .withPropertyValues("props.nesteds.something.prop1=something")
-                .run(context -> {
-                    assertThat(context)
-                            .getFailure()
-                            .rootCause()
-                            .hasMessageContaining("Field error in object 'props.nesteds.something' on field 'prop2': rejected value [null]");
-                });
+    void nestedRecordMap() {
+        runner.withPropertyValues("props.nested-record-map.something.prop1=something")
+                .run(context -> assertThat(context).getFailure().rootCause()
+                        .hasMessageContaining("Field error in object 'props.nested-record-map.something' on field 'prop2': rejected value [null]"));
+    }
+
+    @Test
+    void nestedClassMap() {
+        runner.withPropertyValues("props.nested-class-map.something.prop1=something")
+                .run(context -> assertThat(context).getFailure().rootCause()
+                        .hasMessageContaining("Field error in object 'props.nested-class-map.something' on field 'prop2': rejected value [null]"));
     }
 
     @Data
@@ -43,12 +46,20 @@ class ValidationReproducerTest implements WithAssertions {
     @ConfigurationProperties(prefix = "props")
     static class ConfigPropsClass {
 
-        private Map<String, Nested> nesteds = new HashMap<>();
+        private Map<String, NestedRecord> nestedRecordMap = new HashMap<>();
+        private Map<String, NestedClass> nestedClassMap = new HashMap<>();
 
-        record Nested(
+        record NestedRecord(
                 String prop1,
                 @NotEmpty String prop2
         ) {
+        }
+
+        @RequiredArgsConstructor
+        @SuppressWarnings("ClassCanBeRecord")
+        static class NestedClass {
+            final String prop1;
+            @NotEmpty final String prop2;
         }
     }
 
