@@ -14,7 +14,6 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 class ValidationReproducerTest implements WithAssertions {
 
@@ -55,11 +54,10 @@ class ValidationReproducerTest implements WithAssertions {
         ) {
         }
 
-        @RequiredArgsConstructor
-        @SuppressWarnings("ClassCanBeRecord")
+        @Data
         static class NestedClass {
-            final String prop1;
-            @NotEmpty final String prop2;
+            String prop1;
+            @NotEmpty String prop2;
         }
     }
 
