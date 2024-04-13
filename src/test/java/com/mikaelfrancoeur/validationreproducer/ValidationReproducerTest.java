@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,11 +47,11 @@ class ValidationReproducerTest implements WithAssertions {
     @ConfigurationProperties(prefix = "props")
     static class ConfigPropsClass {
 
-        private Map<String, NestedClass> nestedMap = new HashMap<>();
-        private Set<NestedClass> nestedSet = new HashSet<>();
+        private Map<String, MyClass> nestedMap = new HashMap<>();
+        private Set<MyClass> nestedSet = new HashSet<>();
 
         @Data
-        static class NestedClass {
+        static class MyClass {
             String prop1;
             @NotEmpty String prop2;
         }
