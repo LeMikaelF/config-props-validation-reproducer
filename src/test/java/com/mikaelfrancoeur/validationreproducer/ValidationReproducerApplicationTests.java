@@ -46,7 +46,7 @@ class ValidationReproducerTest implements WithAssertions {
 
         private Map<String, Nested> nesteds = new HashMap<>();
 
-        public record Nested(
+        record Nested(
                 String prop1,
                 @NotEmpty String prop2
         ) {
