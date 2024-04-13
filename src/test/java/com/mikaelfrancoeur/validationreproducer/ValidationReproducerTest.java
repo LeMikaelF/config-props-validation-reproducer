@@ -1,7 +1,9 @@
 package com.mikaelfrancoeur.validationreproducer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +42,13 @@ class ValidationReproducerTest implements WithAssertions {
                         .hasMessageContaining("Field error in object 'props.nested-class-map.something' on field 'prop2': rejected value [null]"));
     }
 
+    @Test
+    void nestedClassSet() {
+        runner.withPropertyValues("props.nested-class-set[0].prop1=something")
+                .run(context -> assertThat(context).getFailure().rootCause()
+                        .hasMessageContaining("Field error in object 'props.nested-class-set[0]' on field 'prop2': rejected value [null]"));
+    }
+
     @Data
     @Validated
     @ConfigurationProperties(prefix = "props")
@@ -47,6 +56,7 @@ class ValidationReproducerTest implements WithAssertions {
 
         private Map<String, NestedRecord> nestedRecordMap = new HashMap<>();
         private Map<String, NestedClass> nestedClassMap = new HashMap<>();
+        private Set<NestedClass> nestedClassSet = new HashSet<>();
 
         record NestedRecord(
                 String prop1,
