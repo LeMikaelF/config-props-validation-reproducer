@@ -1,5 +1,10 @@
 package com.mikaelfrancoeur.validationreproducer;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,26 +30,36 @@ class ValidationReproducerTest implements WithAssertions {
     }
 
     @Test
-    void topLevel() {
-        runner.run(context -> assertThat(context).getFailure().rootCause()
-                .hasMessageContaining("Field error in object 'props' on field 'myprop': rejected value [null]"));
+    void nestedObject() {
+        runner
+                .withPropertyValues("props.nested.myprop1=value")
+                .run(context -> assertThat(context).getFailure().rootCause()
+                .hasMessageContaining("Field error in object 'props.nested' on field 'myprop2': rejected value [null]"));
     }
 
     @Test
-    void nested() {
+    void nestedCollection() {
         runner
-                .withPropertyValues("props.myprop=value", "props.nested.myprop1=value")
+                .withPropertyValues("props.list[0].myprop1=value")
                 .run(context -> assertThat(context).getFailure().rootCause()
-                .hasMessageContaining("Field error in object 'props.nested' on field 'myprop2': rejected value [null]"));
+                        .hasMessageContaining("Field error in object 'props.list[0]' on field 'myprop2': rejected value [null]"));
+    }
+
+    @Test
+    void nestedMap() {
+        runner
+                .withPropertyValues("props.map.key.myprop1=value")
+                .run(context -> assertThat(context).getFailure().rootCause()
+                        .hasMessageContaining("Field error in object 'props.map.key' on field 'myprop2': rejected value [null]"));
     }
 
     @Data
     @Validated
     @ConfigurationProperties(prefix = "props")
     static class ConfigPropsClass {
-        @NotEmpty private String myprop;
-
-        private Nested nested = new Nested();
+        private Nested nested;
+        private Collection<Nested> list;
+        private Map<String, Nested> map;
 
         @Data
         static class Nested {
